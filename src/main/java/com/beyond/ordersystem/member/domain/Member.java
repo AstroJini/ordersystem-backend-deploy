@@ -1,16 +1,14 @@
 package com.beyond.ordersystem.member.domain;
 
-import com.beyond.ordersystem.common.service.BaseTimeEntity;
+import com.beyond.ordersystem.common.domain.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Where;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@ToString
 @Entity
 @Builder
 // jpql을 제회하고 모든 조회쿼리에 where del_yn="N" 붙이는 효과

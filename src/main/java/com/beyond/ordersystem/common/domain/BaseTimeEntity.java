@@ -1,4 +1,4 @@
-package com.beyond.ordersystem.common.service;
+package com.beyond.ordersystem.common.domain;
 
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
