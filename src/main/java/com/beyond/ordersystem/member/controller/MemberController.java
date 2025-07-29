@@ -3,10 +3,7 @@ package com.beyond.ordersystem.member.controller;
 import com.beyond.ordersystem.common.auth.JwtTokenProvider;
 import com.beyond.ordersystem.common.dto.CommonDto;
 import com.beyond.ordersystem.member.domain.Member;
-import com.beyond.ordersystem.member.dto.LoginReqDto;
-import com.beyond.ordersystem.member.dto.LoginResDto;
-import com.beyond.ordersystem.member.dto.MemberCreateDto;
-import com.beyond.ordersystem.member.dto.MemberResDto;
+import com.beyond.ordersystem.member.dto.*;
 import com.beyond.ordersystem.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,11 +38,11 @@ public class MemberController {
 //        at 토큰생성
         String accessToken = jwtTokenProvider.createAtToken(member);
 //        rt 톤큰 생성
-        String RefreshToken = jwtTokenProvider.createRtToken(member);
+        String refreshToken = jwtTokenProvider.createRtToken(member);
 
         LoginResDto loginResDto = LoginResDto.builder()
                 .accessToken(accessToken)
-                .refreshToken(RefreshToken)
+                .refreshToken(refreshToken)
                 .build();
         return new ResponseEntity<>(
                 CommonDto.builder()
@@ -57,12 +54,21 @@ public class MemberController {
     }
 //        rt 를 통한 at 갱신요청
     @PostMapping("/refresh-at")
-    public ResponseEntity<?> generateNewAt(){
+    public ResponseEntity<?> generateNewAt(@RequestBody RefreshTokenDto refreshTokenDto) {
 //        rt 검증로직
-
+        Member member = jwtTokenProvider.validateRt(refreshTokenDto.getRefreshToken());
 //        at 신규생성
-
-        return null;
+        String accessToken = jwtTokenProvider.createAtToken(member);
+        LoginResDto loginResDto = LoginResDto.builder()
+                .accessToken(accessToken)
+                .build();
+        return new ResponseEntity<>(
+                CommonDto.builder()
+                        .result(loginResDto)
+                        .status_code(HttpStatus.OK.value())
+                        .status_message("at 재발급 성공")
+                        .build()
+                , HttpStatus.OK);
     }
 
     @GetMapping("/list")
