@@ -5,6 +5,7 @@ import com.beyond.ordersystem.member.dto.MemberCreateDto;
 import com.beyond.ordersystem.product.dto.ProductCreateDto;
 import com.beyond.ordersystem.product.dto.ProductResDto;
 import com.beyond.ordersystem.product.dto.ProductSearchDto;
+import com.beyond.ordersystem.product.dto.ProductUpdateDto;
 import com.beyond.ordersystem.product.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -64,6 +65,18 @@ public class ProductController {
                         .build()
                 , HttpStatus.OK);
 
+    }
+
+    @PutMapping("/update/{productId}")
+    public ResponseEntity<?> updateProduct(@PathVariable Long productId, @ModelAttribute ProductUpdateDto productUpdateDto) {
+        Long id = productService.updateProduct(productUpdateDto, productId);
+        return new  ResponseEntity<>(
+                CommonDto.builder()
+                        .result(id)
+                        .status_code(HttpStatus.OK.value())
+                        .status_message("상품정보수정완료")
+                        .build()
+                , HttpStatus.OK);
     }
 
 
