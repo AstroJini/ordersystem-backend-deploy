@@ -2,6 +2,7 @@ package com.beyond.ordersystem.ordering.dto;
 
 
 import com.beyond.ordersystem.ordering.domain.OrderDetail;
+import com.beyond.ordersystem.ordering.domain.OrderStatus;
 import com.beyond.ordersystem.ordering.domain.Ordering;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,40 +19,20 @@ import java.util.stream.Collectors;
 public class OrderListResDto {
     private Long id;
     private String memberEmail;
-    private String orderStatus;
-    private List<OrderDetailList> orderDetailList;
+    private OrderStatus orderStatus;
+    private List<OrderDetailResDto> orderDetailResDto;
 
     public static OrderListResDto fromEntity(Ordering ordering){
         return OrderListResDto.builder()
                 .id(ordering.getId())
                 .memberEmail(ordering.getMember().getEmail())
-                .orderStatus(ordering.getOrderStatus().toString())
-                .orderDetailList(
+                .orderStatus(ordering.getOrderStatus())
+                .orderDetailResDto(
                         ordering.getOrderDetailList().stream()
-                                .map(o -> OrderDetailList.fromEntity(o))
+                                .map(o -> OrderDetailResDto.fromEntity(o))
                                 .collect(Collectors.toList())
                 )
                 .build();
 
     }
-
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Data
-    @Builder
-    static class OrderDetailList {
-        private Long detailId;
-        private String productName;
-        private Integer productCount;
-
-        public static OrderDetailList fromEntity(OrderDetail orderDetail){
-            return OrderDetailList.builder()
-                    .detailId(orderDetail.getId())
-                    .productName(orderDetail.getProduct().getName())
-                    .productCount(orderDetail.getQuantity())
-                    .build();
-        }
-    }
-
-
 }

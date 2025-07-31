@@ -35,7 +35,7 @@ public class RedisConfig {
         RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
         configuration.setHostName(host);
         configuration.setPort(port);
-        configuration.setDatabase(0);
+        configuration.setDatabase(1);
         return new LettuceConnectionFactory(configuration);
     }
 

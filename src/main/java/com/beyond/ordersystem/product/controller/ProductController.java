@@ -61,7 +61,7 @@ public class ProductController {
                 CommonDto.builder()
                         .result(productResDto)
                         .status_code(HttpStatus.OK.value())
-                        .status_message("상품목록조회완료")
+                        .status_message("상품상세조회완료")
                         .build()
                 , HttpStatus.OK);
 
