@@ -2,6 +2,7 @@ package com.beyond.ordersystem.ordering.controller;
 
 import com.beyond.ordersystem.common.dto.CommonDto;
 import com.beyond.ordersystem.member.dto.MemberResDto;
+import com.beyond.ordersystem.ordering.domain.Ordering;
 import com.beyond.ordersystem.ordering.dto.OrderCreateDto;
 import com.beyond.ordersystem.ordering.dto.OrderListResDto;
 import com.beyond.ordersystem.ordering.service.OrderingService;
@@ -54,4 +55,16 @@ public class OrderingController {
                         .status_message("내 주문목록 조회 성공!")
                         .build(),HttpStatus.OK);
     }
+
+    @DeleteMapping("/cancel/{id}")
+    public ResponseEntity<?> orderCancel(@PathVariable Long id){
+        Ordering ordering = orderingService.cancel(id);
+        return new ResponseEntity<>(
+                CommonDto.builder()
+                        .result(ordering.getId())
+                        .status_code(HttpStatus.OK.value())
+                        .status_message("주문취소성공")
+                        .build(),HttpStatus.OK);
+    }
+
 }

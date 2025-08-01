@@ -1,5 +1,6 @@
 package com.beyond.ordersystem.ordering.service;
 
+import com.beyond.ordersystem.common.service.SseAlarmService;
 import com.beyond.ordersystem.common.service.StockInventoryService;
 import com.beyond.ordersystem.common.service.StockRabbitMqService;
 import com.beyond.ordersystem.member.domain.Member;
@@ -36,6 +37,8 @@ public class OrderingService {
     private final MemberRepository memberRepository;
     private final StockInventoryService stockInventoryService;
     private final StockRabbitMqService  stockRabbitMqService;
+    private final SseAlarmService  sseAlarmService;
+
     public Long create(List<OrderCreateDto> orderCreateDtoList) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email  = authentication.getName();
@@ -118,10 +121,6 @@ public class OrderingService {
 
         for(OrderCreateDto orderCreateDto : orderCreateDtoList) {
             Product product = productRepository.findById(orderCreateDto.getProductId()).orElseThrow(()->new EntityNotFoundException(""));
-//            if(product.getStockQuantity() < orderCreateDto.getProductCount()){
-//                throw new IllegalArgumentException("재고가 부족합니다");
-//            }
-//            product.updateStockQuantity(orderCreateDto.getProductCount());
 //            redis에서 재고수량 확인 및 재고수량 감소처리
             int newQuantity = stockInventoryService.decreaseStockQuantity(product.getId(), orderCreateDto.getProductCount());
             if(newQuantity < 0){
@@ -137,6 +136,24 @@ public class OrderingService {
             stockRabbitMqService.publish(orderCreateDto.getProductId(), orderCreateDto.getProductCount());
         }
         orderingRepository.save(ordering);
+
+//        주문성공시 admin 에게 알림메세지발송
+        sseAlarmService.publishMessage("admin@naver.com", email, ordering.getId());
+
         return ordering.getId();
     }
+
+    public Ordering cancel(Long id){
+//        ordering 에 상태값 변경 canceled
+        Ordering ordering = orderingRepository.findById(id).orElseThrow(()->new EntityNotFoundException(""));
+        ordering.cancelStatus();
+        for(OrderDetail orderDetail : ordering.getOrderDetailList()){
+//        redis의 재고값 증가
+            orderDetail.getProduct().cancelOrder(orderDetail.getQuantity());
+//        rdb 재고 업데이트
+            stockInventoryService.increaseStockQuantity(orderDetail.getProduct().getId(), orderDetail.getQuantity());
+        }
+        return ordering;
+    }
+
 }
