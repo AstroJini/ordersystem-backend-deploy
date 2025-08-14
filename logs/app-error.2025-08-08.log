@@ -1,0 +1,4 @@
+2025-08-220 16:44 c.b.o.c.s.CommonExceptionHandler-Email already exists
+2025-08-220 16:44 c.b.o.c.s.CommonExceptionHandler-Validation failed for argument [0] in public org.springframework.http.ResponseEntity<?> com.beyond.ordersystem.member.controller.MemberController.save(com.beyond.ordersystem.member.dto.MemberCreateDto): [Field error in object 'memberCreateDto' on field 'password': rejected value [1111]; codes [Size.memberCreateDto.password,Size.password,Size.java.lang.String,Size]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [memberCreateDto.password,password]; arguments []; default message [password],20,8]; default message [크기가 8에서 20 사이여야 합니다]] 
+2025-08-220 17:14 c.b.o.c.s.CommonExceptionHandler-email 또는 password가 일치하지 않습니다
+2025-08-220 17:37 c.b.o.c.s.CommonExceptionHandler-email 또는 password가 일치하지 않습니다

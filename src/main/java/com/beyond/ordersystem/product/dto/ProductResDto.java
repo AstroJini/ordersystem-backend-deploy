@@ -16,6 +16,7 @@ public class ProductResDto {
     private String category;
     private Integer price;
     private Integer stockQuantity;
+    private String imagePath;
 
     public static ProductResDto fromEntity(Product product) {
         return ProductResDto.builder()
@@ -24,6 +25,7 @@ public class ProductResDto {
                 .category(product.getCategory())
                 .price(product.getPrice())
                 .stockQuantity(product.getStockQuantity())
+                .imagePath(product.getImagePath())
                 .build();
     }
 }

@@ -5,6 +5,7 @@ import com.beyond.ordersystem.member.dto.LoginReqDto;
 import com.beyond.ordersystem.member.dto.MemberCreateDto;
 import com.beyond.ordersystem.member.dto.MemberResDto;
 import com.beyond.ordersystem.member.repository.MemberRepository;
+import com.beyond.ordersystem.product.domain.Product;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -58,6 +60,12 @@ public class MemberService {
     public MemberResDto myinfo() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Member member = memberRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("member is not found"));
+        return MemberResDto.fromEntity(member);
+    }
+
+    @Transactional(readOnly = true)
+    public MemberResDto findById(Long memberId) {
+        Member member =  memberRepository.findById(memberId).orElseThrow(()->new NoSuchElementException("없는 상품입니다"));
         return MemberResDto.fromEntity(member);
     }
     public void delete() {

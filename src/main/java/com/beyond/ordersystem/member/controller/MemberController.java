@@ -5,6 +5,7 @@ import com.beyond.ordersystem.common.dto.CommonDto;
 import com.beyond.ordersystem.member.domain.Member;
 import com.beyond.ordersystem.member.dto.*;
 import com.beyond.ordersystem.member.service.MemberService;
+import com.beyond.ordersystem.product.dto.ProductResDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -90,6 +91,20 @@ public class MemberController {
                         .status_message("내정보조회")
                         .status_code(HttpStatus.OK.value())
                         .build(), HttpStatus.OK);
+    }
+
+    @GetMapping("/detail/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> findById(@PathVariable Long id) {
+        MemberResDto memberResDto = memberService.findById(id);
+        return new  ResponseEntity<>(
+                CommonDto.builder()
+                        .result(memberResDto)
+                        .status_code(HttpStatus.OK.value())
+                        .status_message("멤버상세조회완료")
+                        .build()
+                , HttpStatus.OK);
+
     }
 
     @DeleteMapping("/delete")
