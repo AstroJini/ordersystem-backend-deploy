@@ -41,9 +41,7 @@ public class SecurityConfig {
                         "member/doLogin",
                         "/member/refresh-at",
                         "/product/list",
-                        "/v3/api-docs/**",
-                        "/swagger-ui/**",
-                        "/swagger-ui.html").permitAll().anyRequest().authenticated())
+                        "/health").permitAll().anyRequest().authenticated())
                 .build();
     }
     private CorsConfigurationSource corsConfiguration(){
