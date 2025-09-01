@@ -23,7 +23,7 @@ public class OrderingController {
 
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody List<OrderCreateDto> orderCreateDtos) {
-        Long id = orderingService.createConcurrent(orderCreateDtos);
+        Long id = orderingService.create(orderCreateDtos);
         return new  ResponseEntity<>(
                 CommonDto.builder()
                         .result(id)

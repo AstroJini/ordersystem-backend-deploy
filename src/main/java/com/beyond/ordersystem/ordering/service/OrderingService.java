@@ -1,15 +1,11 @@
 package com.beyond.ordersystem.ordering.service;
 
 import com.beyond.ordersystem.common.service.SseAlarmService;
-import com.beyond.ordersystem.common.service.StockInventoryService;
-import com.beyond.ordersystem.common.service.StockRabbitMqService;
 import com.beyond.ordersystem.member.domain.Member;
-import com.beyond.ordersystem.member.dto.MemberResDto;
 import com.beyond.ordersystem.member.repository.MemberRepository;
 import com.beyond.ordersystem.ordering.domain.OrderDetail;
 import com.beyond.ordersystem.ordering.domain.Ordering;
 import com.beyond.ordersystem.ordering.dto.OrderCreateDto;
-import com.beyond.ordersystem.ordering.dto.OrderDetailResDto;
 import com.beyond.ordersystem.ordering.dto.OrderListResDto;
 import com.beyond.ordersystem.ordering.repository.OrderDetailRepository;
 import com.beyond.ordersystem.ordering.repository.OrderingRepository;
@@ -20,10 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,8 +29,6 @@ public class OrderingService {
     private final ProductRepository productRepository;
     private final OrderDetailRepository orderDetailRepository;
     private final MemberRepository memberRepository;
-    private final StockInventoryService stockInventoryService;
-    private final StockRabbitMqService  stockRabbitMqService;
     private final SseAlarmService  sseAlarmService;
 
     public Long create(List<OrderCreateDto> orderCreateDtoList) {
@@ -66,6 +58,10 @@ public class OrderingService {
 //            orderDetailRepository.save(orderDetail);
         }
         orderingRepository.save(ordering);
+
+//        주문성공시 admin 에게 알림메세지발송
+        sseAlarmService.publishMessage("admin@naver.com", email, ordering.getId());
+
         return ordering.getId();
     }
 
@@ -109,39 +105,6 @@ public class OrderingService {
 //
 //        return  orderListResDtoList;
 //    }
-    @Transactional(isolation = Isolation.READ_COMMITTED) // 격리레벨을 낮춤으로서, 성능향상과 lock 관련 문제 원천차단한다.
-    public Long createConcurrent(List<OrderCreateDto> orderCreateDtoList) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email  = authentication.getName();
-        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("없는사용자 입니다"));
-
-        Ordering ordering =  Ordering.builder()
-                .member(member)
-                .build();
-
-        for(OrderCreateDto orderCreateDto : orderCreateDtoList) {
-            Product product = productRepository.findById(orderCreateDto.getProductId()).orElseThrow(()->new EntityNotFoundException(""));
-//            redis에서 재고수량 확인 및 재고수량 감소처리
-            int newQuantity = stockInventoryService.decreaseStockQuantity(product.getId(), orderCreateDto.getProductCount());
-            if(newQuantity < 0){
-                throw new IllegalArgumentException("재고부족");
-            }
-            OrderDetail orderDetail = OrderDetail.builder()
-                    .product(product)
-                    .quantity(orderCreateDto.getProductCount())
-                    .ordering(ordering)
-                    .build();
-            ordering.getOrderDetailList().add(orderDetail);
-//            orderDetailRepository.save(orderDetail);
-            stockRabbitMqService.publish(orderCreateDto.getProductId(), orderCreateDto.getProductCount());
-        }
-        orderingRepository.save(ordering);
-
-//        주문성공시 admin 에게 알림메세지발송
-        sseAlarmService.publishMessage("admin@naver.com", email, ordering.getId());
-
-        return ordering.getId();
-    }
 
     public Ordering cancel(Long id){
 //        ordering 에 상태값 변경 canceled
@@ -151,7 +114,6 @@ public class OrderingService {
 //        redis의 재고값 증가
             orderDetail.getProduct().cancelOrder(orderDetail.getQuantity());
 //        rdb 재고 업데이트
-            stockInventoryService.increaseStockQuantity(orderDetail.getProduct().getId(), orderDetail.getQuantity());
         }
         return ordering;
     }

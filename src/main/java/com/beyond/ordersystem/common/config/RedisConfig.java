@@ -33,16 +33,6 @@ public class RedisConfig {
     }
 
     @Bean
-    @Qualifier("stockInventory")
-    public RedisConnectionFactory stockConnectionFactory() {
-        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
-        configuration.setHostName(host);
-        configuration.setPort(port);
-        configuration.setDatabase(1);
-        return new LettuceConnectionFactory(configuration);
-    }
-
-    @Bean
     @Qualifier("rtInventory")
 //    Bean 들끼리 서로 의존성을 주입받을때 메서드 파라미터로도 주입가능
 //    모든 template 중에 무조건 redisTemplate 이라는 메서드명이 반드시 1개는 있어야함
@@ -54,16 +44,6 @@ public class RedisConfig {
         return redisTemplate;
     }
 
-    @Bean
-    @Qualifier("stockInventory")
-//    Bean 들끼리 서로 의존성을 주입받을때 메서드 파라미터로도 주입가능
-    public RedisTemplate<String, String> stockTemplate(@Qualifier("stockInventory") RedisConnectionFactory stockConnectionFactory) {
-        RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new StringRedisSerializer());
-        redisTemplate.setConnectionFactory(stockConnectionFactory);
-        return redisTemplate;
-    }
 //    redis pub/sub 을 위한 연결객체 생성
     @Bean
     @Qualifier("ssePubSub")

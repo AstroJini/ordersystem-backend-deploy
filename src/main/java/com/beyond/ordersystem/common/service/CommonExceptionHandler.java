@@ -16,7 +16,6 @@ import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 @Slf4j
-@Hidden // swagger 에서 제외
 public class CommonExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
