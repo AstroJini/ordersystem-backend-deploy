@@ -36,6 +36,6 @@ cloud:
 
 jwt:
   expirationAt: 10000
-  secretKeyAt : xxxxxxx
+  secretKeyAt : YmV5b25kYWNjZXNzdG9rZW5zZWNyZXRrZXliZXlvbmRhY2Nlc3N0b2tlbnNlY3JldGtleWJleW9uZGFjY2Vzc3Rva2Vuc2VjcmV0a2V5
   expirationRt: 10000
-  secretKeyRt: xxxxxxx
+  secretKeyRt: YmV5b25kYWNjZXNzdG9rZW5zZWNyZXRrZXliZXlvbmRhY2Nlc3N0b2tlbnNlY3JldGtleWJleW9uZGFjY2Vzc3Rva2Vuc2VjcmV0a2V5
