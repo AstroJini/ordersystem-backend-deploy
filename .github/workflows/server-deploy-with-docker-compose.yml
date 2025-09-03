@@ -44,4 +44,4 @@ jobs:
 
           sudo docker pull yoonsejin/ordersystem:latest
 
-          sudo docker-compose up -d --forece-recreate myordersystem
+          sudo docker-compose up -d --force-recreate myordersystem
